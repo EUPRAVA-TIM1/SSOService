@@ -18,12 +18,28 @@ type JWTReturn struct {
 	Token string `json:"token"`
 }
 
-type User struct {
-	Ime          string `json:"ime"`
-	Prezime      string `json:"prezime"`
-	JMBG         string `json:"jmbg"`
-	Adresa       string `json:"adresa"`
-	BrojTelefona string `json:"brojTelefona"`
-	Email        string `json:"email"`
-	Lozinka      string `json:"lozinka"`
+type Gradjanin struct {
+	Ime          string  `json:"ime"`
+	Prezime      string  `json:"prezime"`
+	JMBG         string  `json:"jmbg"`
+	Adresa       string  `json:"adresa"`
+	BrojTelefona string  `json:"brojTelefona"`
+	Email        string  `json:"email"`
+	Lozinka      string  `json:"lozinka"`
+	Opstina      Opstina `json:"opstina"`
+}
+
+type GradjaninResponseDTO struct {
+	Ime          string  `json:"ime"`
+	Prezime      string  `json:"prezime"`
+	JMBG         string  `json:"jmbg"`
+	Adresa       string  `json:"adresa"`
+	BrojTelefona string  `json:"brojTelefona"`
+	Email        string  `json:"email"`
+	Opstina      Opstina `json:"opstina"`
+}
+
+type Opstina struct {
+	PTT   string `json:"PTT"`
+	Naziv string `json:"Naziv"`
 }

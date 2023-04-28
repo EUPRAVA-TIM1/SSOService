@@ -20,17 +20,19 @@ const (
 )
 
 type ssoHandler struct {
-	ssoService service.SSOservice
+	ssoService       service.SSOservice
+	gradjaninService service.GradjaniService
 }
 
-func NewFilesHandler(s service.SSOservice) SSOHandler {
-	return ssoHandler{ssoService: s}
+func NewFilesHandler(sso service.SSOservice, gs service.GradjaniService) SSOHandler {
+	return ssoHandler{ssoService: sso, gradjaninService: gs}
 }
 
 func (s ssoHandler) Init(r *mux.Router) {
 	r.StrictSlash(false)
 	r.HandleFunc("/sso/Login", s.Login).Methods("POST")
 	r.HandleFunc("/sso/Secret", s.GetSecret).Methods("GET")
+	r.HandleFunc("/sso/Whoami/{jmbg}", s.Whoami).Methods("GET")
 	http.Handle("/", r)
 }
 
@@ -79,6 +81,29 @@ func (s ssoHandler) GetSecret(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResponse(secret, w, http.StatusOK)
+}
+
+// TEST za sada bez tokena
+func (s ssoHandler) Whoami(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	user, err := s.gradjaninService.GetByJMBG(jmbg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(data.GradjaninResponseDTO{
+		Ime:          user.Ime,
+		Prezime:      user.Prezime,
+		JMBG:         user.JMBG,
+		Adresa:       user.Lozinka,
+		BrojTelefona: user.BrojTelefona,
+		Email:        user.Email,
+		Opstina: data.Opstina{
+			PTT:   user.Opstina.PTT,
+			Naziv: user.Opstina.PTT,
+		},
+	}, w, http.StatusOK)
 }
 
 func jsonResponse(object interface{}, w http.ResponseWriter, status int) {
