@@ -29,10 +29,10 @@ func NewServer(config *config.Config) *Server {
 func (server Server) setup() handlers.SSOHandler {
 
 	redisClient := server.intiRedisClient()
-	repository := repo.NewSecretRepoRedis(redisClient)
+	secretRepo := repo.NewSecretRepoRedis(redisClient)
 	gradjaninRepo := repo.NewGrdjaninRepoSql(server.config.MysqlPort, server.config.MySqlRootPass, server.config.MySqlHost)
-	ssoService := service.NewSSOService(repository)
-	gradjaninService := service.NewGradjaniService(gradjaninRepo)
+	ssoService := service.NewSSOService(secretRepo, gradjaninRepo)
+	gradjaninService := service.NewGradjaniService(gradjaninRepo, secretRepo)
 	return handlers.NewFilesHandler(ssoService, gradjaninService)
 }
 

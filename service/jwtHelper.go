@@ -46,6 +46,35 @@ func GenerateJWT(jmbg string, key string) (string, error) {
 	return tokenString, nil
 }
 
+// ParseJwt parses a signed json web token (JWT) string and returns the parsed token
+func parseJwt(token string, secret string) (SSOclaims, error) {
+	t, err := jwt.ParseWithClaims(token, &SSOclaims{}, func(token *jwt.Token) (interface{}, error) { return []byte(secret), nil })
+	if err != nil {
+		return SSOclaims{}, err
+	}
+
+	if claims, ok := t.Claims.(*SSOclaims); ok {
+		return *claims, nil
+	}
+
+	return SSOclaims{}, InvalidJwtClaims
+}
+
+/*Validate Jwt verifies that jwt is valid
+ */
+func ValidateJwt(token, secret string) error {
+	claims, _ := parseJwt(token, secret)
+	if claims.Valid() != nil {
+		return InvalidJwtClaims
+	}
+	return nil
+}
+
+func GetPrincipal(token, secret string) (string, error) {
+	claims, err := parseJwt(token, secret)
+	return claims.Subject, err
+}
+
 func GenerateSecretCode() (*data.Secret, error) {
 	ret := make([]byte, secretLength)
 	for i := 0; i < secretLength; i++ {

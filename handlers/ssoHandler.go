@@ -6,18 +6,12 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strings"
 )
 
 type SSOHandler interface {
 	Init(r *mux.Router)
 }
-
-const (
-	badRequestMsg       = "Bad Request"
-	contentType         = "Content-Type"
-	internalSrvErrMsg   = "Internal server error"
-	unsupportedMediaMsg = "Unsupported media type"
-)
 
 type ssoHandler struct {
 	ssoService       service.SSOservice
@@ -32,7 +26,9 @@ func (s ssoHandler) Init(r *mux.Router) {
 	r.StrictSlash(false)
 	r.HandleFunc("/sso/Login", s.Login).Methods("POST")
 	r.HandleFunc("/sso/Secret", s.GetSecret).Methods("GET")
-	r.HandleFunc("/sso/Whoami/{jmbg}", s.Whoami).Methods("GET")
+	r.HandleFunc("/sso/Whoami", s.Whoami).Methods("GET")
+	r.HandleFunc("/sso/User/{jmbg}", s.GetByJmbg).Methods("GET")
+
 	http.Handle("/", r)
 }
 
@@ -55,19 +51,15 @@ func (s ssoHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case service.JWTError:
-
 			jsonResponse(err.Error(), w, http.StatusInternalServerError)
-			//case service.WrongCredentials:
-			//	er := handler.logLimitService.Increment(usr.Username, ctx)
-			//	if er != nil {
-			//		span.SetStatus(codes.Error, err.Error())
-			//		return
-			//	}
-			//	jsonResponse(err.Error(), w, http.StatusBadRequest)
-			//case service.DoesntExistsError:
-			//	jsonResponse(err.Error(), w, http.StatusNotFound)
+			return
+		case service.WrongCredentials:
+			jsonResponse(err.Error(), w, http.StatusBadRequest)
+			return
+		case service.DoesntExistsError:
+			jsonResponse(err.Error(), w, http.StatusNotFound)
+			return
 		}
-		return
 	}
 	jsonResponse(token, w, http.StatusOK)
 }
@@ -85,6 +77,27 @@ func (s ssoHandler) GetSecret(w http.ResponseWriter, r *http.Request) {
 
 // TEST za sada bez tokena
 func (s ssoHandler) Whoami(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Authorization")
+	user, err := s.gradjaninService.Whoami(extractBearerToken(token))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(data.GradjaninResponseDTO{
+		Ime:          user.Ime,
+		Prezime:      user.Prezime,
+		JMBG:         user.JMBG,
+		Adresa:       user.Adresa,
+		BrojTelefona: user.BrojTelefona,
+		Email:        user.Email,
+		Opstina: data.Opstina{
+			PTT:   user.Opstina.PTT,
+			Naziv: user.Opstina.Naziv,
+		},
+	}, w, http.StatusOK)
+}
+
+func (s ssoHandler) GetByJmbg(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	jmbg := vars["jmbg"]
 	user, err := s.gradjaninService.GetByJMBG(jmbg)
@@ -104,6 +117,14 @@ func (s ssoHandler) Whoami(w http.ResponseWriter, r *http.Request) {
 			Naziv: user.Opstina.PTT,
 		},
 	}, w, http.StatusOK)
+}
+
+func extractBearerToken(authHeader string) string {
+	const prefix = "Bearer "
+	if strings.HasPrefix(authHeader, prefix) {
+		return authHeader[len(prefix):]
+	}
+	return authHeader
 }
 
 func jsonResponse(object interface{}, w http.ResponseWriter, status int) {
