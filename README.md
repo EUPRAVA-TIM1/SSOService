@@ -26,7 +26,7 @@ Once that's set you are good to go since MySql data will be filled with script u
 #### <u>Note: all passwords in sql script are bycript encoded and are: Lozinka123</u>
 
 ## Endpoints
-- `GET /sso/Login` Loges in user and returns generated JWT token as a response.\
+- `GET /sso/Login` Loges in user and returns generated JWT token as a response.
 
 **Expects** json in this format:
 ```
@@ -41,7 +41,7 @@ Once that's set you are good to go since MySql data will be filled with script u
     "token" : <jwt-token-here>
 }
 ```
-- `GET /sso/Secret` Returns secret that is currently in use for encrypting JWT tokens (not using HTTPS for sake of simplicity)\
+- `GET /sso/Secret` Returns secret that is currently in use for encrypting JWT tokens (not using HTTPS for sake of simplicity)
 
   **Expects** `X-Service-Name` header (same as name you provided for a redis as issuer) so it will return secret only to issuers registered in db:\
 **Returns** json in this format:
@@ -52,9 +52,9 @@ Once that's set you are good to go since MySql data will be filled with script u
 }
 ```
 
-- `GET /sso/Whoami` Returns currently logged in gradjanin based on JWT subject(can be used to validate jwt)\
+- `GET /sso/Whoami` Returns currently logged in gradjanin based on JWT subject(can be used to validate jwt)
 
-  **Expects** `Authorization` header with JWT token(with or without Barrer)\
+  **Expects** `Authorization` header with JWT token(with or without Barrer) \
   **Returns** json in this format:
 ```
 {
@@ -89,4 +89,3 @@ Once that's set you are good to go since MySql data will be filled with script u
     }
 }
 ```
->>>>>>> develop
