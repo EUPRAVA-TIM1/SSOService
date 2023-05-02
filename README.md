@@ -54,7 +54,7 @@ Once that's set you are good to go since MySql data will be filled with script u
 }
 ```
 
-- `GET /sso/Whoami` Returns currently logged in gradjanin based on JWT subject\
+- `GET /sso/Whoami` Returns currently logged in gradjanin based on JWT subject(can be used to validate jwt)\
 
   **Expects** `Authorization` header with JWT token(with or without Barrer)\
   **Returns** json in this format:
