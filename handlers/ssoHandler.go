@@ -24,10 +24,10 @@ func NewFilesHandler(sso service.SSOservice, gs service.GradjaniService) SSOHand
 
 func (s ssoHandler) Init(r *mux.Router) {
 	r.StrictSlash(false)
-	r.HandleFunc("/sso/Login", s.Login).Methods("POST")
-	r.HandleFunc("/sso/Secret", s.GetSecret).Methods("GET")
-	r.HandleFunc("/sso/Whoami", s.Whoami).Methods("GET")
-	r.HandleFunc("/sso/User/{jmbg}", s.GetByJmbg).Methods("GET")
+	r.HandleFunc("/sso/Login", s.Login).Methods("POST", "OPTIONS")
+	r.HandleFunc("/sso/Secret", s.GetSecret).Methods("GET", "OPTIONS")
+	r.HandleFunc("/sso/Whoami", s.Whoami).Methods("GET", "OPTIONS")
+	r.HandleFunc("/sso/User/{jmbg}", s.GetByJmbg).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
 }

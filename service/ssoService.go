@@ -3,7 +3,6 @@ package service
 import (
 	"EuprvaSsoService/data"
 	"errors"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -75,9 +74,6 @@ func (s ssoService) Login(credentials data.Credentials) (*data.JWTReturn, error)
 UpdateSecret generates  secret using GenerateSecretCode and stores it in redis db for 1hr after which it calls itself (declared in time.AfterFunc) and generates new one
 */
 func (s ssoService) UpdateSecret() {
-	//TODO only test delete this line
-	fmt.Sprintln("The secret has changed TESST")
-	panic(fmt.Sprintln("The secret has changed TESST"))
 	secret, err := GenerateSecretCode()
 	err = s.secretRepo.Save(*secret, oneHrInMs)
 	if err != nil {
