@@ -34,7 +34,7 @@ func (server Server) setup() handlers.SSOHandler {
 	gradjaninRepo := repo.NewGrdjaninRepoSql(server.config.MysqlPort, server.config.MySqlRootPass, server.config.MySqlHost)
 	ssoService := service.NewSSOService(secretRepo, gradjaninRepo)
 	gradjaninService := service.NewGradjaniService(gradjaninRepo, secretRepo)
-	return handlers.NewFilesHandler(ssoService, gradjaninService)
+	return handlers.NewSSOHandler(ssoService, gradjaninService)
 }
 
 func (server Server) intiRedisClient() *redis.Client {
