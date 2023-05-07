@@ -48,7 +48,12 @@ func GenerateJWT(jmbg string, key string) (string, error) {
 
 // ParseJwt parses a signed json web token (JWT) string and returns the parsed token
 func parseJwt(token string, secret string) (SSOclaims, error) {
-	t, err := jwt.ParseWithClaims(token, &SSOclaims{}, func(token *jwt.Token) (interface{}, error) { return []byte(secret), nil })
+	t, err := jwt.ParseWithClaims(token, &SSOclaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, InvalidSigningMethod
+		}
+		return []byte(secret), nil
+	})
 	if err != nil {
 		return SSOclaims{}, err
 	}
@@ -63,10 +68,15 @@ func parseJwt(token string, secret string) (SSOclaims, error) {
 /*Validate Jwt verifies that jwt is valid
  */
 func ValidateJwt(token, secret string) error {
-	claims, _ := parseJwt(token, secret)
+	claims, err := parseJwt(token, secret)
+	if err != nil {
+		return err
+	}
+
 	if claims.Valid() != nil {
 		return InvalidJwtClaims
 	}
+
 	return nil
 }
 

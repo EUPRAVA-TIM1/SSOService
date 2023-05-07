@@ -18,7 +18,7 @@ type ssoHandler struct {
 	gradjaninService service.GradjaniService
 }
 
-func NewFilesHandler(sso service.SSOservice, gs service.GradjaniService) SSOHandler {
+func NewSSOHandler(sso service.SSOservice, gs service.GradjaniService) SSOHandler {
 	return ssoHandler{ssoService: sso, gradjaninService: gs}
 }
 
