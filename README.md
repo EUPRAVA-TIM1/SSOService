@@ -20,7 +20,7 @@ docker exec -it <your-container-id> sh
 ```
 Once inside terminal type in following command for as many services as you would like.Name isn't important(except that it needs to start with **issuer:**), but it would be great if were service name + something random:
 ```
-mongo-cli set issuer:<your-issuer-name> "true"
+redis-cli set issuer:<your-issuer-name> "true"
 ```
 Once that's set you are good to go since MySql data will be filled with script upon first compose-up.
 #### <u>Note: all passwords in sql script are bycript encoded and are: Lozinka123</u>
