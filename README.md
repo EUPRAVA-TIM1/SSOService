@@ -71,7 +71,7 @@ Once that's set you are good to go since MySql data will be filled with script u
 }
 ```
 
-- `GET /sso/User/{jmbg}` Returns currently logged in gradjanin based on JWT subject\
+- `GET /sso/User/{jmbg}` Returns currently logged in gradjanin based on JMBG from url
 
   **Expects** `jmbg` as a part of an url\
   **Returns** json in this format:
