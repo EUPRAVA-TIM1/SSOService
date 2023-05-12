@@ -57,21 +57,22 @@ func (g GradjaninRepoSql) GetByJmbg(jmbg string) (*data.Gradjanin, error) {
 		if err != nil {
 			panic(err.Error())
 		}
+		return &data.Gradjanin{
+			Ime:          Ime,
+			Prezime:      Prezime,
+			JMBG:         JMBG,
+			Adresa:       Adresa,
+			BrojTelefona: BrojTelefona,
+			Email:        Email,
+			Lozinka:      Lozinka,
+			Opstina: data.Opstina{
+				PTT:   PTT,
+				Naziv: Naziv,
+			},
+		}, nil
 	}
 
-	return &data.Gradjanin{
-		Ime:          Ime,
-		Prezime:      Prezime,
-		JMBG:         JMBG,
-		Adresa:       Adresa,
-		BrojTelefona: BrojTelefona,
-		Email:        Email,
-		Lozinka:      Lozinka,
-		Opstina: data.Opstina{
-			PTT:   PTT,
-			Naziv: Naziv,
-		},
-	}, nil
+	return nil, errors.New("No gradjanin with that JMBG found")
 }
 
 func (g GradjaninRepoSql) OpenConnection() (*sql.DB, error) {
